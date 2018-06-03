@@ -1,0 +1,56 @@
+#!/usr/bin/php -q
+<?php
+define('DEBUG', FALSE);
+define('INICONF', 'phocket.ini');
+date_default_timezone_set('Europe/London');
+set_time_limit(0);
+declare(ticks = 1);
+//mb_internal_encoding('ascii');
+
+if(php_sapi_name() != 'cli')
+{
+        exit("phocketd will only work (predictably) using the CLI SAPI\n");
+}
+
+if(!file_exists(INICONF))
+{
+	throw new \Phocket\Exception(2, 'File does not exist.');
+}
+
+$pid = pcntl_fork();
+if($pid)
+{
+        exit();
+}
+
+posix_setsid();
+ignore_user_abort(true);
+if(DEBUG) xdebug_start_trace('phocket.trace');
+$settings = parse_ini_file(INICONF, TRUE);
+
+spl_autoload_register(function ($class)
+{
+	global $settings;
+	$file = $settings['autoLoader']['libPath'].str_replace('\\', '/', $class).'.php';
+
+	if(file_exists($file))
+	{
+		include_once($file);
+	}
+	else
+	{
+		throw new \Phocket\Exception(1, $file);
+	}
+});
+
+try
+{
+	new Phocket\Handler($settings);
+}
+catch(Exception $e)
+{
+	ob_start();
+	echo 'Warp core breach: '.$e->getMessage()."\n";
+	if(DEBUG) xdebug_print_function_stack();
+	file_put_contents('coredump', ob_get_clean());
+}

@@ -1,0 +1,19 @@
+Phocketd
+
+Phocket is a PHP7 OOP implementation of a Websockets Server.  It uses the PHP Event extension and is secured using TLS.  Any number of observers can be written to consume requests based on common URL routing.
+
+Developed with these great resources:
+
+https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers
+
+https://websocket.org/echo.html
+
+https://datatracker.ietf.org/doc/rfc6455
+
+I also use the PHP HTTP extension for reading the clients upgrade headers:
+https://mdref.m6w6.name/http/Message/getRequestMethod
+
+And pack is also important:
+http://php.net/manual/en/function.pack.php
+
+
